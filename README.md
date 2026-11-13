@@ -40,3 +40,51 @@ Si tu sistema operativo utiliza por defecto una versión superior de GCC (como G
 
 • prodcons B N P C  (P cantidad de procesos productores y C cantidad de procesos consumidores)
 ```
+---
+
+## Laboratorio 3: Sistema de Auditoria Forense FAT32-FUSE
+Este proyecto forma parte de la materia Sistemas Operativos (FaMAF - UNC) y consiste en el diseño e implementación de un sistema de registro de operaciones criticas del filesystem en un log binario y desarollar un sistema que permite recuperar archivos.
+
+### Descripcion General:
+El proyecto consiste en un sistema de auditoría y recuperación forense integrado a un sistema de archivos FAT32 montado mediante FUSE. Su objetivo principal es registrar de manera persistente las operaciones críticas del filesystem en un log binario estructurado y proveer un mecanismo robusto para la recuperación de archivos borrados, detectando de forma automática conflictos ante la posible sobrescritura de clusters.
+
+### Características Principales
+1. Sistema de logs persistentes:
+
+	•Creación automática de la estructura de auditoría al montar el filesystem.   
+
+	•Estructura de eventos de tamaño fijo optimizada para registrar operaciones a bajo nivel.   
+
+	•Registro detallado de operaciones críticas del sistema de archivos: write, unlink, mkdir y rmdir.   
+
+2. Herramienta de Inspección:
+
+	•Utilidad en C para leer y decodificar el archivo binario de eventos, mostrando un historial legible con marcas de tiempo, IDs secuenciales, tipos de operación y rutas.   
+
+3. Recuperación de Archivos Borrados:
+
+	•Implementación de la recuperación mediante comunicación con FUSE (vía ioctl o archivo de control).   
+
+	•Análisis del historial de logs para reconstruir la cadena exacta de clusters de un archivo eliminado.   
+
+	•Detección de colisiones: Verificación automática para comprobar si los clusters del archivo borrado fueron reutilizados o sobrescritos por operaciones posteriores, evitando reconstrucciones inconsistentes.   
+
+### Decisiones de Arquitectura y Diseño:
+
+1. Modularización: El código de auditoría se aísla de la lógica central del FUSE para mantener la mantenibilidad y limpieza del proyecto, implementando funciones dedicadas para la inicialización, escritura y lectura de eventos.   
+
+2. Estructura de tamaño fijo (audit_event_t): Diseñada con un tamaño uniforme para facilitar el acceso aleatorio y la serialización binaria en disco, adaptándose a las limitaciones de los clusters del filesystem (por defecto, 512 bytes).   
+
+### Compilación y Ejecución:
+
+1. Montar el filesystem y compilar los componentes provistos:
+
+	```make```
+
+2. Ejecutar el lector de auditoría:
+
+	```./audit_reader /mnt/fuse/.audit/events.bin```
+
+3. Recuperar un archivo borrado
+	
+	```./restore /mnt/fuse /dir1/file.txt```V
