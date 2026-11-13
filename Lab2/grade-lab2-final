@@ -1,0 +1,16 @@
+#!/usr/bin/env python3
+"""Entrega final: syscalls + pingpong + prodcons. Score: X/15 (+ estrella @CREDIT)."""
+from gradelib import *
+from lab2_tests import (
+    register_sem_tests,
+    register_pingpong_tests,
+    register_prodcons_tests,
+    register_star_test,
+)
+
+r = Runner(save("xv6.out"))
+register_sem_tests(r)
+register_pingpong_tests(r)
+register_prodcons_tests(r)
+register_star_test(r)
+run_tests()
